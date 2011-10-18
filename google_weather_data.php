@@ -24,11 +24,11 @@ define('GOOGLE_WEATHER_URI', 'http://www.google.com/ig/api?hl=' . GOOGLE_WEATHER
  */
 function get_google_weather_data() {
 
-  if (isset($nginx_geoip_city)) {
-    printf("nginx city: %s\n", $nginx_geoip_city);
+  if (isset($_SERVER['GEOIP_CITY'])) {
+    printf("nginx city: %s\n", $_SERVER['GEOIP_CITY']);
   }
 
-  $nginx_geoip_city = empty($nginx_geoip_city) ? 'Lisboa' : $nginx_geoip_city;
+  $nginx_geoip_city = empty($_SERVER['GEOIP_CITY']) ? 'Lisboa' : $_SERVER['GEOIP_CITY'];
 
   // Create the cURL handler.
   $ch = curl_init();
