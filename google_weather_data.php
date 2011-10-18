@@ -5,30 +5,32 @@
  * @date   Fri Oct 14 17:44:57 2011
  *
  * @brief  A simple script that queries Google for the weather data for a given city. It
- *         relies
- *
- *
+ *         relies on Maxmind's GeoIP Nginx integration for getting the city of
+ *         the client IP.
  */
 
 // The language in which the language is going to be retrieved.
 define('GOOGLE_WEATHER_LANG', 'pt-pt');
 // The Google Weather URI.
 define('GOOGLE_WEATHER_URI', 'http://www.google.com/ig/api?hl=' . GOOGLE_WEATHER_LANG . '&weather=');
+// The default city for Google weather.
+define('DEFAULT_CITY', 'Lisboa');
 
 /**
  * Gets the weather data from Google.
  *
+ * @param $default_city string
+ *   The default city for which the data is requested. Use only if the GeoIP
+ *    database doesn't return anything.
  *
  * @return string
  *   The data obtained from Google in XML.
  */
-function get_google_weather_data() {
 
-  if (isset($_SERVER['GEOIP_CITY'])) {
-    printf("nginx city: %s\n", $_SERVER['GEOIP_CITY']);
-  }
+function get_google_weather_data($default_city = DEFAULT_CITY) {
 
-  $nginx_geoip_city = empty($_SERVER['GEOIP_CITY']) ? 'Lisboa' : $_SERVER['GEOIP_CITY'];
+  // Get the GeoIP city if possible. Otherwise use the default.
+  $nginx_geoip_city = empty($_SERVER['GEOIP_CITY']) ? $default_city : $_SERVER['GEOIP_CITY'];
 
   // Create the cURL handler.
   $ch = curl_init();
@@ -43,10 +45,9 @@ function get_google_weather_data() {
   // Close the cURL handler.
   curl_close($ch);
 
-
-
   // Verify the encoding. Fix it if necessary.
   return $encoding != 'UTF-8' ? @iconv($encoding, 'UTF-8', $data) : $data;
 } // get_google_weather_data
 
-print_r(get_google_weather_data());
+// Print the output.
+print get_google_weather_data();
