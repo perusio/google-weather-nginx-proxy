@@ -29,8 +29,11 @@ define('DEFAULT_CITY', 'Lisboa');
 
 function get_google_weather_data($default_city = DEFAULT_CITY) {
 
-  // Get the GeoIP city if possible. Otherwise use the default.
-  $nginx_geoip_city = empty($_SERVER['GEOIP_CITY']) ? $default_city : $_SERVER['GEOIP_CITY'];
+  // Get the GeoIP city if possible. Otherwise use the default. The city name
+  // is obtained from an HTTP header.
+  $nginx_geoip_city =  empty($_GET['city']) ? $default_city :
+    filter_var($_GET['city'], FILTER_SANITIZE_STRING,
+               array('options' => array('default' => $default_city)));
 
   // Create the cURL handler.
   $ch = curl_init();
